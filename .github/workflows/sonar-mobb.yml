@@ -53,7 +53,7 @@ jobs:
           SONARQUBE_TOKEN=${{ secrets.SONAR_TOKEN }} \
           BRANCH="$BRANCH" \
           REPORT_PATH=report.json \
-          python .github/scripts/sonarqube_download_report.py
+          python .github/workflows/scripts/sonarqube_download_report.py
 
       - name: Run Mobb on the findings and get fixes
         if: always()
