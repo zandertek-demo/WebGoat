@@ -1,7 +1,8 @@
+name: Sonar and Mobb
+
 on:
   push:
-    branches:
-      - mobb-demo
+  pull_request:
 
 jobs:
   build:
