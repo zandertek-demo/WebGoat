@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=demo-webgoat
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
 
       - name: Export SonarQube report (Push)
         if: always() && github.event_name == 'push'
@@ -56,16 +56,16 @@ jobs:
           REPORT_PATH=report.json \
           python .github/workflows/scripts/sonarqube_download_report.py
 
-      - name: Export SonarQube report (PR)
-        if: always() && github.event_name == 'pull_request'
-        run: |
-          SONARQUBE_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
-          SONARQUBE_PROJECT=${{ secrets.SONAR_PROJECT_KEY }} \
-          SONARQUBE_TOKEN=${{ secrets.SONAR_TOKEN }} \
-          SONARQUBE_ORG="none" \
-          PULL_REQUEST_ID=${{ github.event.number }} \
-          REPORT_PATH=report.json \
-          python .github/workflows/scripts/sonarqube_download_report.py
+      # - name: Export SonarQube report (PR)
+      #   if: always() && github.event_name == 'pull_request'
+      #   run: |
+      #     SONARQUBE_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
+      #     SONARQUBE_PROJECT=${{ secrets.SONAR_PROJECT_KEY }} \
+      #     SONARQUBE_TOKEN=${{ secrets.SONAR_TOKEN }} \
+      #     SONARQUBE_ORG="none" \
+      #     PULL_REQUEST_ID=${{ github.event.number }} \
+      #     REPORT_PATH=report.json \
+      #     python .github/workflows/scripts/sonarqube_download_report.py
 
       - name: Upload SonarQube report as artifact
         if: always()
@@ -75,14 +75,14 @@ jobs:
           path: report.json
           retention-days: 30
 
-      - name: Run Mobb on the findings and get fixes (PR)
-        if: always() && github.event_name == 'pull_request'
-        uses: mobb-dev/action/review@v1.1
-        with:
-          report-file: "report.json"
-          api-key: ${{ secrets.MOBB_API_TOKEN }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          scanner: sonarqube
+      # - name: Run Mobb on the findings and get fixes (PR)
+      #   if: always() && github.event_name == 'pull_request'
+      #   uses: mobb-dev/action/review@v1.1
+      #   with:
+      #     report-file: "report.json"
+      #     api-key: ${{ secrets.MOBB_API_TOKEN }}
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     scanner: sonarqube
 
       - name: Run Mobb on the findings and get fixes (Push)
         if: always() && github.event_name == 'push'
