@@ -46,7 +46,7 @@ jobs:
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=demo-webgoat
 
       - name: Export SonarQube report (Push)
-        if: always() && github.event_name == 'push'
+        if: always()
         run: |
           SONARQUBE_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
           SONARQUBE_PROJECT=${{ secrets.SONAR_PROJECT_KEY }} \
@@ -56,19 +56,8 @@ jobs:
           REPORT_PATH=report.json \
           python .github/workflows/scripts/sonarqube_download_report.py
 
-      - name: Export SonarQube report (PR)
-        if: always() && github.event_name == 'pull_request'
-        run: |
-          SONARQUBE_HOST_URL=${{ secrets.SONAR_HOST_URL }} \
-          SONARQUBE_PROJECT=${{ secrets.SONAR_PROJECT_KEY }} \
-          SONARQUBE_TOKEN=${{ secrets.SONAR_TOKEN }} \
-          SONARQUBE_ORG="none" \
-          PULL_REQUEST_ID=${{ github.event.number }} \
-          REPORT_PATH=report.json \
-          python .github/workflows/scripts/sonarqube_download_report.py
-
       - name: Upload SonarQube report as artifact
-        if: always()
+        if: success() 
         uses: actions/upload-artifact@v4
         with:
           name: sonarqube-report
