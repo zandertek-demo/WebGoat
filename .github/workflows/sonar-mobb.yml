@@ -56,6 +56,14 @@ jobs:
           REPORT_PATH=report.json \
           python .github/workflows/scripts/sonarqube_download_report.py
 
+      - name: Upload SonarQube report as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarqube-report
+          path: report.json
+          retention-days: 30
+
       - name: Run Mobb on the findings and get fixes (PR)
         if: always() && github.event_name == 'pull_request'
         uses: mobb-dev/action/review@v1.1
